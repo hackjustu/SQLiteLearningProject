@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.banana.sqlitelearningproject.model.Book;
+import com.example.banana.sqlitelearningproject.model.Item;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
@@ -20,7 +20,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
-    private static final String DATABASE_NAME = "BookDB";
+    private static final String DATABASE_NAME = "ItemDB";
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,20 +28,21 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // SQL statement to create book table
-        String CREATE_BOOK_TABLE = "CREATE TABLE books ( " +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        // SQL statement to create item table
+        String CREATE_ITEM_TABLE = "CREATE TABLE items ( " +
+                "orderKey INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "title TEXT, "+
-                "author TEXT )";
+                "front TEXT, "+
+                "back TEXT )";
 
-        // create books table
-        db.execSQL(CREATE_BOOK_TABLE);
+        // create items table
+        db.execSQL(CREATE_ITEM_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older books table if existed
-        db.execSQL("DROP TABLE IF EXISTS books");
+        db.execSQL("DROP TABLE IF EXISTS items");
 
         // create fresh books table
         this.onCreate(db);
@@ -53,27 +54,29 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
      */
 
     // Books table name
-    private static final String TABLE_BOOKS = "books";
+    private static final String TABLE_ITEMS = "items";
 
     // Books Table Columns names
-    private static final String KEY_ID = "id";
+    private static final String KEY_ID = "orderKey";
     private static final String KEY_TITLE = "title";
-    private static final String KEY_AUTHOR = "author";
+    private static final String KEY_FRONT = "front";
+    private static final String KEY_BACK = "back";
 
-    private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_AUTHOR};
+    private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_FRONT,KEY_BACK};
 
-    public void addBook(Book book){
-        Log.d(TAG, "addBook: " + book.toString());
+    public void addItem(Item item){
+        Log.d(TAG, "addItem: " + item.toString());
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
-        values.put(KEY_TITLE, book.getTitle()); // get title
-        values.put(KEY_AUTHOR, book.getAuthor()); // get author
+        values.put(KEY_TITLE, item.getTitle()); // get title
+        values.put(KEY_FRONT, item.getFront()); // get front
+        values.put(KEY_BACK, item.getBack()); // get back
 
         // 3. insert
-        db.insert(TABLE_BOOKS, // table
+        db.insert(TABLE_ITEMS, // table
                 null, //nullColumnHack
                 values); // key/value -> keys = column names/ values = column values
 
@@ -81,14 +84,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Book getBook(int id){
+    public Item getItem(int id){
 
         // 1. get reference to readable DB
         SQLiteDatabase db = this.getReadableDatabase();
 
         // 2. build query
         Cursor cursor =
-                db.query(TABLE_BOOKS, // a. table
+                db.query(TABLE_ITEMS, // a. table
                         COLUMNS, // b. column names
                         " id = ?", // c. selections
                         new String[] { String.valueOf(id) }, // d. selections args
@@ -101,65 +104,68 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
 
-        // 4. build book object
-        Book book = new Book();
-        book.setId(Integer.parseInt(cursor.getString(0)));
-        book.setTitle(cursor.getString(1));
-        book.setAuthor(cursor.getString(2));
+        // 4. build item object
+        Item item = new Item();
+        item.setId(Integer.parseInt(cursor.getString(0)));
+        item.setTitle(cursor.getString(1));
+        item.setFront(cursor.getString(2));
+        item.setBack(cursor.getString(3));
 
-        Log.d(TAG, "getBook("+id+")" + book.toString());
+        Log.d(TAG, "getItem("+id+")" + item.toString());
 
-        // 5. return book
-        return book;
+        // 5. return item
+        return item;
     }
 
     // Get All Books
-    public List<Book> getAllBooks() {
-        List<Book> books = new LinkedList<Book>();
+    public List<Item> getAllItems() {
+        List<Item> items = new LinkedList<Item>();
 
         // 1. build the query
-        String query = "SELECT  * FROM " + TABLE_BOOKS;
+        String query = "SELECT  * FROM " + TABLE_ITEMS;
 
         // 2. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
-        // 3. go over each row, build book and add it to list
-        Book book = null;
+        // 3. go over each row, build item and add it to list
+        Item item = null;
         if (cursor.moveToFirst()) {
             do {
-                book = new Book();
-                book.setId(Integer.parseInt(cursor.getString(0)));
-                book.setTitle(cursor.getString(1));
-                book.setAuthor(cursor.getString(2));
+                item = new Item();
+                item.setId(Integer.parseInt(cursor.getString(0)));
+                item.setTitle(cursor.getString(1));
+                item.setFront(cursor.getString(2));
+                item.setBack(cursor.getString(3));
 
-                // Add book to books
-                books.add(book);
+                // Add item to items
+                items.add(item);
             } while (cursor.moveToNext());
         }
 
-        Log.d(TAG, "getAllBooks(): " + books.toString());
+        Log.d(TAG, "getAllItems(): " + items.toString());
 
-        // return books
-        return books;
+        // return items
+        return items;
     }
 
-    // Updating single book
-    public int updateBook(Book book) {
+    // Updating single item
+    public int updateItem(Item item) {
 
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
-        values.put("title", book.getTitle()); // get title
-        values.put("author", book.getAuthor()); // get author
+        values.put("title", item.getTitle()); // get title
+        values.put("front", item.getFront()); // get front
+        values.put("back", item.getBack()); // get back
 
         // 3. updating row
-        int i = db.update(TABLE_BOOKS, //table
+        int i = db.update(TABLE_ITEMS, //table
                 values, // column/value
                 KEY_ID+" = ?", // selections
-                new String[] { String.valueOf(book.getId()) }); //selection args
+                new String[] { String.valueOf(item.getId()) }); //selection args
 
         // 4. close
         db.close();
@@ -168,21 +174,21 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     }
 
-    // Deleting single book
-    public void deleteBook(Book book) {
+    // Deleting single item
+    public void deleteItem(Item item) {
 
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. delete
-        db.delete(TABLE_BOOKS,
+        db.delete(TABLE_ITEMS,
                 KEY_ID+" = ?",
-                new String[] { String.valueOf(book.getId()) });
+                new String[] { String.valueOf(item.getId()) });
 
         // 3. close
         db.close();
 
-        Log.d(TAG, "deleteBook: " + book.toString());
+        Log.d(TAG, "deleteItem: " + item.toString());
 
     }
 }

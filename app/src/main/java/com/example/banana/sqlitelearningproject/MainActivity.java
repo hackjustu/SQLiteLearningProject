@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 
-import com.example.banana.sqlitelearningproject.model.Book;
+import com.example.banana.sqlitelearningproject.model.Item;
 import com.example.banana.sqlitelearningproject.sqlite.MySQLiteHelper;
 
 import java.util.List;
@@ -26,18 +26,18 @@ public class MainActivity extends Activity {
          * CRUD Operations
          * */
         // add Books
-        db.addBook(new Book("Android Application Development Cookbook", "Wei Meng Lee"));
-        db.addBook(new Book("Android Programming: The Big Nerd Ranch Guide", "Bill Phillips and Brian Hardy"));
-        db.addBook(new Book("Learn Android App Development", "Wallace Jackson"));
+        db.addItem(new Item("Android Application Development Cookbook", "Wei Meng Lee", "Cool!"));
+        db.addItem(new Item("Android Programming: The Big Nerd Ranch Guide", "Bill Phillips and Brian Hardy", "Amazing!"));
+        db.addItem(new Item("Learn Android App Development", "Wallace Jackson", "Awesome!"));
 
         // get all books
-        List<Book> list = db.getAllBooks();
+        List<Item> list = db.getAllItems();
 
         // delete one book
-        db.deleteBook(list.get(0));
+        db.deleteItem(list.get(0));
 
         // get all books
-        db.getAllBooks();
+        db.getAllItems();
     }
 
 }
