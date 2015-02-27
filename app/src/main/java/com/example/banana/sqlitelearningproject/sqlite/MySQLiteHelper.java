@@ -33,7 +33,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String KEY_FRONT = "front";
     public static final String KEY_BACK = "back";
 
-    private static final String[] COLUMNS = {KEY_ROW_ID,KEY_GROUP,KEY_TITLE,KEY_FRONT,KEY_BACK};
+    private static final String[] COLUMNS = {KEY_ROW_ID, KEY_GROUP, KEY_TITLE, KEY_FRONT, KEY_BACK};
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -66,7 +66,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     /**
      * CRUD operations (create "add", read "get", update, delete) book + get all books + delete all books
      */
-    public void addItem(String groupId ,Item item){
+    public void addItem(String groupId, Item item) {
         Log.d(TAG, "addItem: " + item.toString());
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
@@ -87,7 +87,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Item getItem(int id){
+    public Item getItem(int id) {
 
         // 1. get reference to readable DB
         SQLiteDatabase db = this.getReadableDatabase();
@@ -97,7 +97,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 db.query(TABLE_ITEMS, // a. table
                         COLUMNS, // b. column names
                         " id = ?", // c. selections
-                        new String[] { String.valueOf(id) }, // d. selections args
+                        new String[]{String.valueOf(id)}, // d. selections args
                         null, // e. group by
                         null, // f. having
                         null, // g. order by
@@ -114,13 +114,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         item.setFront(cursor.getString(3));
         item.setBack(cursor.getString(4));
 
-        Log.d(TAG, "getItem("+id+")" + item.toString());
+        Log.d(TAG, "getItem(" + id + ")" + item.toString());
 
         // 5. return item
         return item;
     }
 
-    // Get All Books
+    // Get All Items
     public List<Item> getAllItems() {
         List<Item> items = new LinkedList<Item>();
 
@@ -153,8 +153,16 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         return items;
     }
 
+    public Cursor getAllItemsCursor() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT  * FROM " + TABLE_ITEMS;
+        Cursor cursor = db.rawQuery(query, null);
+        return cursor;
+    }
+
     // Updating single item
-    public int updateItem(String groupId ,Item item) {
+    public int updateItem(String groupId, Item item) {
 
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
@@ -169,8 +177,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // 3. updating row
         int i = db.update(TABLE_ITEMS, //table
                 values, // column/value
-                KEY_ROW_ID+" = ?", // selections
-                new String[] { String.valueOf(item.getId()) }); //selection args
+                KEY_ROW_ID + " = ?", // selections
+                new String[]{String.valueOf(item.getId())}); //selection args
 
         // 4. close
         db.close();
@@ -179,15 +187,15 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     // Deleting single item
-    public void deleteItem(String groupId ,Item item) {
+    public void deleteItem(String groupId, Item item) {
 
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. delete
         db.delete(TABLE_ITEMS,
-                KEY_ROW_ID+" = ?",
-                new String[] { String.valueOf(item.getId()) });
+                KEY_ROW_ID + " = ?",
+                new String[]{String.valueOf(item.getId())});
 
         // 3. close
         db.close();
