@@ -15,12 +15,25 @@ import com.example.banana.sqlitelearningproject.model.Item;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
-    static private final String TAG = "SQL-LEARN";;
+    static private final String TAG = "SQL-LEARN";
+
+    // Database Name
+    private static final String DATABASE_NAME = "ItemDB";
+
+    // Items table name
+    public static final String TABLE_ITEMS = "items";
 
     // Database Version
     private static final int DATABASE_VERSION = 1;
-    // Database Name
-    private static final String DATABASE_NAME = "ItemDB";
+
+    // Items Table Columns names
+    public static final String KEY_ROW_ID = "_id";
+    public static final String KEY_GROUP = "groupId";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_FRONT = "front";
+    public static final String KEY_BACK = "back";
+
+    private static final String[] COLUMNS = {KEY_ROW_ID,KEY_GROUP,KEY_TITLE,KEY_FRONT,KEY_BACK};
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -29,11 +42,12 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // SQL statement to create item table
-        String CREATE_ITEM_TABLE = "CREATE TABLE items ( " +
-                "orderKey INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "title TEXT, "+
-                "front TEXT, "+
-                "back TEXT )";
+        String CREATE_ITEM_TABLE = "create table " + TABLE_ITEMS + " ( "
+                + KEY_ROW_ID + " integer primary key autoincrement , "
+                + KEY_GROUP + " text  , "
+                + KEY_TITLE + "  text  , "
+                + KEY_FRONT + "  text  , "
+                + KEY_BACK + "  text  ) ";
 
         // create items table
         db.execSQL(CREATE_ITEM_TABLE);
@@ -42,7 +56,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older books table if existed
-        db.execSQL("DROP TABLE IF EXISTS items");
+        db.execSQL("DROP TABLE IF EXISTS" + TABLE_ITEMS);
 
         // create fresh books table
         this.onCreate(db);
@@ -52,25 +66,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     /**
      * CRUD operations (create "add", read "get", update, delete) book + get all books + delete all books
      */
-
-    // Books table name
-    private static final String TABLE_ITEMS = "items";
-
-    // Books Table Columns names
-    private static final String KEY_ID = "orderKey";
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_FRONT = "front";
-    private static final String KEY_BACK = "back";
-
-    private static final String[] COLUMNS = {KEY_ID,KEY_TITLE,KEY_FRONT,KEY_BACK};
-
-    public void addItem(Item item){
+    public void addItem(String groupId ,Item item){
         Log.d(TAG, "addItem: " + item.toString());
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
+        values.put(KEY_GROUP, groupId); // get groupId
         values.put(KEY_TITLE, item.getTitle()); // get title
         values.put(KEY_FRONT, item.getFront()); // get front
         values.put(KEY_BACK, item.getBack()); // get back
@@ -107,9 +110,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // 4. build item object
         Item item = new Item();
         item.setId(Integer.parseInt(cursor.getString(0)));
-        item.setTitle(cursor.getString(1));
-        item.setFront(cursor.getString(2));
-        item.setBack(cursor.getString(3));
+        item.setTitle(cursor.getString(2));
+        item.setFront(cursor.getString(3));
+        item.setBack(cursor.getString(4));
 
         Log.d(TAG, "getItem("+id+")" + item.toString());
 
@@ -130,33 +133,35 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
         // 3. go over each row, build item and add it to list
         Item item = null;
+        Log.d(TAG, "getAllItems(): \n");
         if (cursor.moveToFirst()) {
             do {
                 item = new Item();
                 item.setId(Integer.parseInt(cursor.getString(0)));
-                item.setTitle(cursor.getString(1));
-                item.setFront(cursor.getString(2));
-                item.setBack(cursor.getString(3));
+                item.setTitle(cursor.getString(2));
+                item.setFront(cursor.getString(3));
+                item.setBack(cursor.getString(4));
 
                 // Add item to items
                 items.add(item);
+
+                Log.d(TAG, cursor.getString(1) + ": " + item.toString() + '\n');
             } while (cursor.moveToNext());
         }
-
-        Log.d(TAG, "getAllItems(): " + items.toString());
 
         // return items
         return items;
     }
 
     // Updating single item
-    public int updateItem(Item item) {
+    public int updateItem(String groupId ,Item item) {
 
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
+        values.put("groupId", groupId); // get groupId
         values.put("title", item.getTitle()); // get title
         values.put("front", item.getFront()); // get front
         values.put("back", item.getBack()); // get back
@@ -164,31 +169,29 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // 3. updating row
         int i = db.update(TABLE_ITEMS, //table
                 values, // column/value
-                KEY_ID+" = ?", // selections
+                KEY_ROW_ID+" = ?", // selections
                 new String[] { String.valueOf(item.getId()) }); //selection args
 
         // 4. close
         db.close();
 
         return i;
-
     }
 
     // Deleting single item
-    public void deleteItem(Item item) {
+    public void deleteItem(String groupId ,Item item) {
 
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. delete
         db.delete(TABLE_ITEMS,
-                KEY_ID+" = ?",
+                KEY_ROW_ID+" = ?",
                 new String[] { String.valueOf(item.getId()) });
 
         // 3. close
         db.close();
 
         Log.d(TAG, "deleteItem: " + item.toString());
-
     }
 }
