@@ -13,17 +13,17 @@
         android:layout_centerVertical="true" />
 
     <TextView
-        android:id="@+id/front"
+        android:id="@+id/frontSide"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/title"
         android:layout_centerVertical="true" />
 
     <TextView
-        android:id="@+id/back"
+        android:id="@+id/backSide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/front"
+        android:layout_toRightOf="@id/frontSide"
         android:layout_centerVertical="true" />
 
 </RelativeLayout>

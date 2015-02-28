@@ -5,17 +5,19 @@ public class Item {
 
     private int id;
     private String title;
-    private String front;
-    private String back;
+    private String frontSide;
+    private String backSide;
+    private int bookMark;
 
     public Item() {
     }
 
-    public Item(String title, String front, String back) {
+    public Item(String title, String frontSide, String backSide, int bookMark) {
         super();
         this.title = title;
-        this.front = front;
-        this.back = back;
+        this.frontSide = frontSide;
+        this.backSide = backSide;
+        this.bookMark = bookMark;
     }
 
     public int getId() {
@@ -34,24 +36,32 @@ public class Item {
         this.title = title;
     }
 
-    public String getFront() {
-        return front;
+    public String getFrontSide() {
+        return frontSide;
     }
 
-    public void setFront(String front) {
-        this.front = front;
+    public void setFrontSide(String frontSide) {
+        this.frontSide = frontSide;
     }
 
-    public String getBack() {
-        return back;
+    public String getBackSide() {
+        return backSide;
     }
 
-    public void setBack(String back) {
-        this.back = back;
+    public void setBackSide(String backSide) {
+        this.backSide = backSide;
+    }
+
+    public int getBookMark() {
+        return bookMark;
+    }
+
+    public void setBookMark(int bookMark) {
+        this.bookMark = bookMark;
     }
 
     @Override
     public String toString() {
-        return "Item [id=" + id + ", title=" + title + ", front=" + front + ", back=" + back + "]";
+        return "Item [id=" + id + ", title=" + title + ", frontSide=" + frontSide + ", backSide=" + backSide + "]";
     }
 }

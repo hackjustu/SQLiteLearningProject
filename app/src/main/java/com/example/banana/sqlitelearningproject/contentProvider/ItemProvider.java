@@ -8,14 +8,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import com.example.banana.sqlitelearningproject.sqlite.MySQLiteHelper;
+import com.example.banana.sqlitelearningproject.sqlite.ItemTableHelper;
 
 /**
  * Created by Citrixer on 2/26/15.
  */
 public class ItemProvider extends ContentProvider {
 
-    private MySQLiteHelper mDB;
+    private ItemTableHelper mDB;
 
     private static final String AUTHORITY = "com.example.banana.ItemProvider";
     public static final int ITEMS = 100;
@@ -40,7 +40,7 @@ public class ItemProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
 
-        mDB = new MySQLiteHelper(getContext());
+        mDB = new ItemTableHelper(getContext());
         return true;
     }
 
@@ -48,12 +48,12 @@ public class ItemProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(MySQLiteHelper.TABLE_ITEMS);
+        queryBuilder.setTables(ItemTableHelper.TABLE_ITEMS);
 
         int uriType = sURIMatcher.match(uri);
         switch (uriType) {
             case ITEM_ID:
-                queryBuilder.appendWhere(MySQLiteHelper.KEY_ROW_ID + "="
+                queryBuilder.appendWhere(ItemTableHelper.KEY_ROW_ID + "="
                         + uri.getLastPathSegment());
                 break;
             case ITEMS:
